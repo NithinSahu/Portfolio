@@ -1,126 +1,63 @@
-// Smooth scrolling
+// Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     });
 });
 
-// Scroll animations
+// Navbar background on scroll
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+    } else {
+        navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+    }
+});
+
+// Animate skill bars when in view
 const observerOptions = {
-    threshold: 0.1,
+    threshold: 0.5,
     rootMargin: '0px 0px -100px 0px'
 };
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+            const skillBars = entry.target.querySelectorAll('.skill-progress');
+            skillBars.forEach(bar => {
+                bar.style.animation = 'fillBar 2s ease-in-out forwards';
+            });
         }
     });
 }, observerOptions);
 
-document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-});
-
-// Interactive cursor effect
-document.addEventListener('mousemove', (e) => {
-    const cursor = document.createElement('div');
-    cursor.style.position = 'fixed';
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-    cursor.style.width = '2px';
-    cursor.style.height = '2px';
-    cursor.style.background = '#00ffff';
-    cursor.style.borderRadius = '50%';
-    cursor.style.pointerEvents = 'none';
-    cursor.style.zIndex = '9999';
-    cursor.style.boxShadow = '0 0 10px #00ffff';
-    document.body.appendChild(cursor);
-    
-    setTimeout(() => {
-        cursor.remove();
-    }, 1000);
-});
-
-// Dynamic glitch effect on hover
-document.querySelectorAll('.glitch').forEach(element => {
-    element.addEventListener('mouseenter', () => {
-        element.style.animation = 'none';
-        setTimeout(() => {
-            element.style.animation = '';
-        }, 10);
-    });
-});
-
-// Typing effect for terminal
-const terminalElements = document.querySelectorAll('.typing');
-terminalElements.forEach(element => {
-    const text = element.textContent;
-    element.textContent = '';
-    let i = 0;
-    
-    const typeWriter = () => {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(typeWriter, 50);
-        }
-    };
-    
-    // Start typing effect when element comes into view
-    const typeObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                setTimeout(typeWriter, 500);
-                typeObserver.unobserve(entry.target);
-            }
-        });
-    });
-    
-    typeObserver.observe(element);
-});
-
-// Particle system for enhanced visual effects
-function createParticle() {
-    const particle = document.createElement('div');
-    particle.style.position = 'fixed';
-    particle.style.width = '1px';
-    particle.style.height = '1px';
-    particle.style.background = Math.random() > 0.5 ? '#00ffff' : '#ff0080';
-    particle.style.left = Math.random() * window.innerWidth + 'px';
-    particle.style.top = '-10px';
-    particle.style.pointerEvents = 'none';
-    particle.style.zIndex = '1';
-    particle.style.boxShadow = `0 0 6px ${particle.style.background}`;
-    
-    document.body.appendChild(particle);
-    
-    const animateParticle = () => {
-        const currentTop = parseInt(particle.style.top);
-        if (currentTop > window.innerHeight) {
-            particle.remove();
-            return;
-        }
-        particle.style.top = (currentTop + 2) + 'px';
-        requestAnimationFrame(animateParticle);
-    };
-    
-    requestAnimationFrame(animateParticle);
+const skillsSection = document.querySelector('#skills');
+if (skillsSection) {
+    observer.observe(skillsSection);
 }
 
-// Create particles periodically
-setInterval(createParticle, 200);
+// Contact form submission
+document.querySelector('.contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Thank you for your message! I\'ll get back to you soon.');
+    this.reset();
+});
 
-// Neon glow effect on scroll
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const rate = scrolled * -0.5;
-    const gridBg = document.querySelector('.grid-bg');
-    if (gridBg) {
-        gridBg.style.transform = `translate3d(0, ${rate}px, 0)`;
-    }
+// Add hover effect to cards
+document.querySelectorAll('.skill-card, .project-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
 });
